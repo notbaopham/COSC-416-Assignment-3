@@ -567,7 +567,7 @@ MonoBehaviour:
   OnMove:
     m_PersistentCalls:
       m_Calls: []
-  OnSpacePressed:
+  OnJump:
     m_PersistentCalls:
       m_Calls: []
   OnResetPressed:
@@ -953,6 +953,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputManager: {fileID: 480401915}
   speed: 3
+  jumpForce: 0.5
   freeLookCamera: {fileID: 1967617128}
 --- !u!54 &1267228631
 Rigidbody:

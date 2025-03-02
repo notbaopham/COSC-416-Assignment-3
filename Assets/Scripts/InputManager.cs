@@ -5,7 +5,7 @@ using UnityEngine.Events;
 public class InputManager : MonoBehaviour {
 
     public UnityEvent<Vector2> OnMove = new UnityEvent<Vector2>();
-    public UnityEvent OnSpacePressed = new UnityEvent();
+    public UnityEvent<Vector3> OnJump = new UnityEvent<Vector3>();
     public UnityEvent OnResetPressed = new UnityEvent();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -17,12 +17,8 @@ public class InputManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-            {
-                OnSpacePressed?.Invoke();
-            }
-
         Vector2 input = Vector2.zero;
+        Vector3 inputJump = Vector3.zero;
         if (Input.GetKey(KeyCode.A)) {
             input += Vector2.left;
         }
@@ -35,7 +31,11 @@ public class InputManager : MonoBehaviour {
         if (Input.GetKey(KeyCode.W)) {
             input += Vector2.up;
         }
+        if (Input.GetKey(KeyCode.Space)) {
+            inputJump += Vector3.up;
+        }
         OnMove?.Invoke(input);
+        OnJump?.Invoke(inputJump);
 
         if (Input.GetKeyDown(KeyCode.R))
         {

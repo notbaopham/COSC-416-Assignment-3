@@ -1,19 +1,43 @@
+using System;
 using Unity.Cinemachine;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private InputManager inputManager;
-    [SerializeField] private float speed;
+    [SerializeField] private float speed = 5f;
+    [SerializeField] private float jumpForce = 1f;
     [SerializeField] private CinemachineCamera freeLookCamera; // Changing the direction of movement as the camera
 
     private Rigidbody rb;
+
+    private Boolean onGround;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // Subscribing MovePlayerto the OnMove event
         inputManager.OnMove.AddListener(MovePlayer);
+        inputManager.OnJump.AddListener(Jump);
         rb = GetComponent<Rigidbody>();
+        onGround = false;
+
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Ground"))
+        {
+            onGround = true;  // Player is on the ground
+        }
+    }
+
+    // Called when the player exits a collision
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.collider.CompareTag("Ground"))
+        {
+            onGround = false;  // Player is no longer on the ground
+        }
     }
 
     private void MovePlayer(Vector2 direction)
@@ -34,10 +58,18 @@ public class Player : MonoBehaviour
         rb.AddForce(speed * moveDirection);
     }
 
+    private void Jump(Vector3 jumpDirection)
+    {
+        if (onGround) {
+            rb.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
+        }
+    }
+    
+
     // Update is called once per frame
     void Update()
     {
-        transform.forward = freeLookCamera.transform.forward;
-        transform.rotation = Quaternion.Euler(0,transform.rotation.eulerAngles.y,0);
+        
     }
+
 }
