@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float jumpForce = 1f;
     [SerializeField] private CinemachineCamera freeLookCamera; // Changing the direction of movement as the camera
 
+    [SerializeField] private float gravity = 1f;
     private Rigidbody rb;
 
     private Boolean onGround;
@@ -20,7 +21,14 @@ public class Player : MonoBehaviour
         inputManager.OnJump.AddListener(Jump);
         rb = GetComponent<Rigidbody>();
         onGround = false;
+    }
 
+    void FixedUpdate()
+    {
+        // Apply custom gravity based on gravityScale
+        // Gravity is typically (0, -9.81, 0), but you can modify it by your scale factor
+        Vector3 customGravity = new Vector3(0, -9.81f * gravity, 0);
+        rb.AddForce(customGravity, ForceMode.Acceleration);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -55,13 +63,13 @@ public class Player : MonoBehaviour
         Vector3 moveDirection = forward * direction.y + right * direction.x;
 
         // Apply force to the rigidbody for movement
-        rb.AddForce(speed * moveDirection);
+        rb.linearVelocity = new Vector3(moveDirection.x * speed, rb.linearVelocity.y, moveDirection.z * speed);
     }
 
     private void Jump(Vector3 jumpDirection)
     {
         if (onGround) {
-            rb.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
+            rb.AddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);
         }
     }
     
