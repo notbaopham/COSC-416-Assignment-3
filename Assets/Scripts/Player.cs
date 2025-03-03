@@ -8,10 +8,12 @@ public class Player : MonoBehaviour
     [SerializeField] private float speed = 5f;
     [SerializeField] private float jumpForce = 1f;
     [SerializeField] private CinemachineCamera freeLookCamera; // Changing the direction of movement as the camera
-
     [SerializeField] private float gravity = 1f;
+
+    [SerializeField] private float dashSpeed = 10f;
     private Rigidbody rb;
 
+    private Boolean canDoubleJump;
     private Boolean onGround;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -19,8 +21,8 @@ public class Player : MonoBehaviour
         // Subscribing MovePlayerto the OnMove event
         inputManager.OnMove.AddListener(MovePlayer);
         inputManager.OnJump.AddListener(Jump);
+        inputManager.OnDash.AddListener(Dash);
         rb = GetComponent<Rigidbody>();
-        onGround = false;
     }
 
     void FixedUpdate()
@@ -45,6 +47,7 @@ public class Player : MonoBehaviour
         if (collision.collider.CompareTag("Ground"))
         {
             onGround = false;  // Player is no longer on the ground
+            canDoubleJump = true;
         }
     }
 
@@ -66,18 +69,27 @@ public class Player : MonoBehaviour
         rb.linearVelocity = new Vector3(moveDirection.x * speed, rb.linearVelocity.y, moveDirection.z * speed);
     }
 
-    private void Jump(Vector3 jumpDirection)
+    private void Jump(Vector3 direction)
     {
         if (onGround) {
-            rb.AddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);
+            rb.AddForce(direction * jumpForce, ForceMode.Impulse);
+        } else if (canDoubleJump) {
+            rb.AddForce(direction * jumpForce, ForceMode.Impulse);
         }
     }
-    
+
+    private void Dash() {
+        Vector3 forward = freeLookCamera.transform.forward;
+        forward.y = 0f;  // Keep dash direction horizontal
+        forward.Normalize();
+
+        // Apply dash force in the direction the camera is facing
+        rb.linearVelocity = new Vector3(forward.x * dashSpeed, rb.linearVelocity.y, forward.z * dashSpeed);
+    }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
 
+    }
 }

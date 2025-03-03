@@ -7,6 +7,7 @@ public class InputManager : MonoBehaviour {
     public UnityEvent<Vector2> OnMove = new UnityEvent<Vector2>();
     public UnityEvent<Vector3> OnJump = new UnityEvent<Vector3>();
     public UnityEvent OnResetPressed = new UnityEvent();
+    public UnityEvent OnDash = new UnityEvent();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -31,8 +32,11 @@ public class InputManager : MonoBehaviour {
         if (Input.GetKey(KeyCode.W)) {
             input += Vector2.up;
         }
-        if (Input.GetKey(KeyCode.Space)) {
+        if (Input.GetKeyDown(KeyCode.Space)) {
             inputJump += Vector3.up;
+        }
+        if (Input.GetKeyDown(KeyCode.LeftShift)) {
+            OnDash?.Invoke();
         }
         OnMove?.Invoke(input);
         OnJump?.Invoke(inputJump);
